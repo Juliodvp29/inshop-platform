@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { AuthModule } from '../auth/auth.module';
 import { getDatabaseConfig } from '../config/database.config';
 import { AppController } from './app.controller';
@@ -11,7 +12,8 @@ import { AppService } from './app.service';
     // Configuración de variables de entorno
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      // Apunta al .env en la raíz del proyecto
+      envFilePath: join(__dirname, '../../../../.env'),
     }),
 
     // Configuración de TypeORM

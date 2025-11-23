@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # PostgreSQL para Auth Service
   postgres-auth:
     image: postgres:15-alpine
     container_name: ecommerce-postgres-auth
@@ -8,24 +9,25 @@ services:
       POSTGRES_DB: auth_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
-      POSTGRES_INITDB_ARGS: "-A md5"
     ports:
-      - "5432:5432"
+      - \"5432:5432\"
     volumes:
       - postgres-auth-data:/var/lib/postgresql/data
     networks:
       - ecommerce-network
 
+  # Redis (para sesiones y cache)
   redis:
     image: redis:7-alpine
     container_name: ecommerce-redis
     ports:
-      - "6379:6379"
+      - \"6379:6379\"
     volumes:
       - redis-data:/data
     networks:
       - ecommerce-network
 
+  # pgAdmin (opcional - para ver la base de datos gráficamente)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: ecommerce-pgadmin
@@ -33,7 +35,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
+      - \"5050:80\"
     networks:
       - ecommerce-network
     depends_on:

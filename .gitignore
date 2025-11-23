@@ -5,6 +5,14 @@ dist
 tmp
 out-tsc
 
+# docker
+docker-compose.yml
+docker-compose.yaml
+
+# environment variables
+.env
+.env.example
+
 # dependencies
 node_modules
 
