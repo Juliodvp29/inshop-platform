@@ -1,0 +1,8 @@
+{
+  "name": "@inshop-platform/storefront-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "storefront-e2e"
+  }
+}
