@@ -10,14 +10,14 @@ import {
 } from 'typeorm';
 import { RefreshToken } from './refresh-token.entity';
 
-export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  TENANT_ADMIN = 'tenant_admin',
-  TENANT_MANAGER = 'tenant_manager',
-  TENANT_SUPPORT = 'tenant_support',
-  CUSTOMER = 'customer',
-  GUEST = 'guest',
-}
+export const UserRole = {
+  SUPER_ADMIN: 'super_admin',
+  TENANT_ADMIN: 'tenant_admin',
+  TENANT_MANAGER: 'tenant_manager',
+  TENANT_SUPPORT: 'tenant_support',
+  CUSTOMER: 'customer',
+  GUEST: 'guest',
+};
 
 @Entity('users')
 export class User {
@@ -43,10 +43,10 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
+    enum: Object.values(UserRole),
     default: UserRole.CUSTOMER,
   })
-  role!: UserRole;
+  role!: string;
 
   @Column({ name: 'email_verified', default: false })
   emailVerified!: boolean;

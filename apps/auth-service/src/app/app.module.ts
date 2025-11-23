@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AuthModule } from '../auth/auth.module';
@@ -17,7 +17,11 @@ import { AppService } from './app.service';
     }),
 
     // Configuración de TypeORM
-    TypeOrmModule.forRoot(getDatabaseConfig()),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: getDatabaseConfig,
+      inject: [ConfigService],
+    }),
 
     // Módulos de la aplicación
     AuthModule,
