@@ -12,6 +12,7 @@ docker-compose.yaml
 # environment variables
 .env
 .env.example
+/.env
 
 # dependencies
 node_modules

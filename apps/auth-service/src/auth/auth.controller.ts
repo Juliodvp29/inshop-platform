@@ -1,3 +1,4 @@
+
 import {
   Body,
   Controller,
@@ -6,6 +7,7 @@ import {
   HttpStatus,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,6 +16,7 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
+import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -39,6 +42,38 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
+  }
+
+  /**
+   * GET /auth/google
+   * Inicia el flujo de OAuth con Google
+   */
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuth() {
+    // Este método redirige automáticamente a Google
+  }
+
+  /**
+   * GET /auth/google/callback
+   * Callback de Google después de la autenticación
+   */
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuthCallback(
+    @Request() req: any,
+    @Res() res: any,
+  ): Promise<void> {
+    const authResponse = await this.authService.loginWithGoogle(req.user);
+
+    // Redirigir al frontend con tokens en la URL
+    // En producción, considera usar cookies httpOnly
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    const redirectUrl = `${frontendUrl}/auth/callback?accessToken=${authResponse.accessToken}&refreshToken=${authResponse.refreshToken}`;
+
+    res.redirect(redirectUrl);
   }
 
   /**
@@ -81,6 +116,8 @@ export class AuthController {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       role: req.user.role,
+      emailVerified: req.user.emailVerified,
+      oauthProvider: req.user.oauthProvider,
     };
   }
 }

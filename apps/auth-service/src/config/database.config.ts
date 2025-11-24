@@ -15,7 +15,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
     autoLoadEntities: true,
   };
 
-  console.log('🔍 Database Configuration:');
+  console.log('Database Configuration:');
   console.log('  HOST:', config.host);
   console.log('  PORT:', config.port);
   console.log('  DATABASE:', config.database);

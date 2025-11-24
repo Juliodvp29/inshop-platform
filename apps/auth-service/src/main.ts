@@ -1,3 +1,4 @@
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -10,14 +11,24 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // Configurar CORS
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // En producción, especificar los dominios permitidos
+    credentials: true,
+  });
 
-  // Configurar validation pipes globalmente
+  // IMPORTANTE: Configurar validation pipes globalmente
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
+      whitelist: true, // Elimina propiedades no definidas en el DTO
+      forbidNonWhitelisted: true, // Lanza error si hay propiedades extras
+      transform: true, // Transforma los payloads a instancias de DTO
+      transformOptions: {
+        enableImplicitConversion: true, // Convierte tipos automáticamente
+      },
+      // IMPORTANTE: No fallar en el primer error, mostrar todos
+      stopAtFirstError: false,
+      // Validar cada propiedad incluso si es undefined
+      skipMissingProperties: false,
     })
   );
 
@@ -26,7 +37,17 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  Logger.log(`🚀 Auth Service running on: http://localhost:${port}`);
+  Logger.log(`Auth Service running on: http://localhost:${port}`);
+  Logger.log(`Available endpoints:
+    - POST   /auth/register
+    - POST   /auth/login
+    - GET    /auth/google
+    - GET    /auth/google/callback
+    - POST   /auth/refresh
+    - POST   /auth/logout
+    - GET    /auth/me
+    - PATCH  /users/:id/role
+  `);
 }
 
 bootstrap();

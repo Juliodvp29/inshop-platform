@@ -199,4 +199,39 @@ export class AuthService {
       },
     };
   }
+
+  async loginWithGoogle(googleUser: any): Promise<AuthResponseDto> {
+    const { email, oauthProvider, oauthId, firstName, lastName } = googleUser;
+
+    // Buscar si el usuario ya existe
+    let user = await this.userRepository.findOne({
+      where: [
+        { email },
+        { oauthProvider, oauthId }
+      ],
+    });
+
+    if (user) {
+      // Usuario existente - actualizar último login
+      user.lastLoginAt = new Date();
+      await this.userRepository.save(user);
+    } else {
+      // Usuario nuevo - crear cuenta
+      user = this.userRepository.create({
+        email,
+        firstName,
+        lastName,
+        oauthProvider,
+        oauthId,
+        emailVerified: true, // Google ya verificó el email
+        role: UserRole.CUSTOMER,
+        isActive: true,
+      });
+
+      await this.userRepository.save(user);
+    }
+
+    // Generar tokens
+    return this.generateAuthResponse(user);
+  }
 }
